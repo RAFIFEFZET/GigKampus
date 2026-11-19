@@ -13,6 +13,20 @@ enum OrderStatus: string
     case Cancelled = 'cancelled';
     case Disputed = 'disputed';
 
+    public function label(): string
+    {
+        return match ($this) {
+            self::AwaitingPayment => 'Menunggu pembayaran',
+            self::AwaitingValidation => 'Menunggu validasi',
+            self::InProgress => 'Diproses',
+            self::Delivered => 'Hasil dikirim',
+            self::Revision => 'Dalam revisi',
+            self::Completed => 'Selesai',
+            self::Cancelled => 'Dibatalkan',
+            self::Disputed => 'Dalam sengketa',
+        };
+    }
+
     public function isPaymentStage(): bool
     {
         return $this === self::AwaitingPayment || $this === self::AwaitingValidation;

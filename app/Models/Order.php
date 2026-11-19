@@ -134,6 +134,11 @@ class Order extends Model
         return $user->hasId($this->buyer_id);
     }
 
+    public function reference(): string
+    {
+        return '#ORD-'.$this->order_date->timezone('Asia/Jakarta')->year.'-'.str_pad((string) $this->id, 3, '0', STR_PAD_LEFT);
+    }
+
     public function hasSeller(User $user): bool
     {
         return $user->hasId($this->seller_id);
@@ -223,6 +228,13 @@ class Order extends Model
         $this->advanceTo(OrderStatus::Revision);
     }
 
+    public function assertStageVersion(?int $expected): void
+    {
+        if ($expected !== null && $expected !== $this->stage_version) {
+            throw new DomainException('The order stage changed before this action was submitted.');
+        }
+    }
+
     public function complete(User $buyer, ?CarbonInterface $at = null): void
     {
         if (! $this->hasBuyer($buyer) || $this->status !== OrderStatus::Delivered) {
@@ -230,7 +242,7 @@ class Order extends Model
         }
 
         $this->advanceTo(OrderStatus::Completed);
-        $this->voidPendingCancellation('The order was completed.', $at);
+        $this->voidPendingCancellation('Pesanan sudah selesai', $at);
     }
 
     public function cancelUnpaid(User $actor, bool $hasRejectedProofs): void

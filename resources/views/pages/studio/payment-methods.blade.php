@@ -10,7 +10,7 @@
 
         <x-ui.section-header title="Rekening & QRIS" :level="2"
             subtitle="Siapkan minimal satu metode pembayaran untuk menerbitkan jasa atau mengirim penawaran."/>
-        <x-ui.alert tone="warning">Simulasi demo. Jangan melakukan transfer uang sungguhan.</x-ui.alert>
+        <x-domain.simulation-banner/>
 
         @isset($paymentError)
             <x-ui.alert tone="danger">{{ $paymentError }}</x-ui.alert>

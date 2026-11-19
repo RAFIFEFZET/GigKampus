@@ -56,8 +56,8 @@
                             <p class="whitespace-pre-wrap">{{ $offer->proposal_note }}</p>
                             <p class="text-sm text-campus-muted">Kuota revisi {{ $offer->max_revisions }} kali</p>
                             @if ($offer->status_reason)<p class="text-sm text-campus-muted">{{ $offer->status_reason }}</p>@endif
-                            @if (auth('web')->id() === $serviceRequest->buyer_id && $offer->status === \App\Enums\PriceOfferStatus::Pending && $serviceRequest->acceptsOffers())
-                                <x-ui.button class="self-start" variant="secondary" :href="route('orders.index')">Terima Penawaran</x-ui.button>
+                            @if (in_array($offer->id, $acceptableOfferIds, true))
+                                <x-ui.button class="self-start" variant="secondary" :href="route('checkout.offer', $offer)">Terima Penawaran</x-ui.button>
                             @endif
                         </x-ui.card>
                     @endforeach

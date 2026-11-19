@@ -8,7 +8,9 @@
                 </time>
             </div>
             <p class="mt-2 whitespace-pre-wrap">{{ $entry->body }}</p>
-            @if (isset($entry->data->service_request_id))
+            @if ($entry->order_id)
+                <a href="{{ route('orders.show', $entry->order_id) }}" class="mt-2 block text-sm font-semibold text-campus-link">Lihat pesanan</a>
+            @elseif (isset($entry->data->service_request_id))
                 <a href="{{ route('requests.show', $entry->data->service_request_id) }}" class="mt-2 block text-sm font-semibold text-campus-link">Lihat permintaan</a>
             @elseif (str_starts_with($entry->type, 'ktm.'))
                 <a href="{{ route('ktm.index') }}" class="mt-2 block text-sm font-semibold text-campus-link">Lihat status KTM</a>

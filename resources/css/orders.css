@@ -1,0 +1,40 @@
+@layer components {
+    .orders-shell { @apply mx-auto w-full max-w-campus px-5 py-7 sm:py-10 xl:px-0; }
+    .order-columns { @apply grid min-w-0 gap-campus-gap lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:items-start; }
+    .payment-columns { @apply grid min-w-0 gap-campus-gap md:grid-cols-2 md:items-start; }
+    .order-tabs { @apply grid grid-cols-3 items-center gap-1 border-b border-campus-border py-2 text-xs sm:flex sm:gap-2 sm:text-sm; }
+    .order-tabs a { @apply rounded-full px-2 py-2 text-center font-medium text-campus-muted hover:bg-white sm:px-4; }
+    .order-tabs a[aria-current='page'] { @apply bg-white font-semibold text-campus-link; }
+    .order-filters { @apply flex min-w-0 gap-2 overflow-x-auto pb-1; scrollbar-width: none; }
+    .order-filters a { @apply shrink-0; }
+    .order-stage { @apply grid min-w-0 grid-cols-4 gap-1 text-center text-xs text-campus-muted; }
+    .order-stage li { @apply relative flex min-w-0 flex-col items-center gap-2; }
+    .order-stage li::after {
+        content: '';
+        @apply absolute top-3 h-px bg-campus-border;
+        left: calc(50% + .75rem);
+        width: calc(100% - 1.5rem);
+    }
+    .order-stage li[data-passed='true']::after { @apply bg-campus-blue; }
+    .order-stage li:last-child::after { @apply hidden; }
+    .order-stage .step-marker { @apply grid size-6 shrink-0 place-items-center rounded-full bg-campus-background text-xs font-semibold; }
+    .order-stage li[data-passed='true'] .step-marker, .order-stage li[aria-current='step'] .step-marker { @apply bg-campus-blue text-white; }
+    .order-stage li[aria-current='step'] { @apply font-semibold text-campus-link; }
+    .checkout-steps { @apply flex flex-wrap items-center justify-between gap-2 rounded-campus-card bg-white p-3 text-xs text-campus-muted; }
+    .checkout-steps span { @apply rounded-full px-3 py-2 text-center sm:px-5; }
+    .checkout-steps span[aria-current='step'] { @apply bg-campus-blue font-semibold text-white; }
+    .checkout-method { @apply flex min-w-0 items-center gap-3 rounded-xl border border-campus-border bg-white p-4 sm:p-5; }
+    .checkout-method:has(input:checked) { @apply border-campus-blue bg-campus-sky ring-1 ring-campus-blue; }
+    .checkout-method input { @apply size-5 shrink-0 accent-campus-blue; }
+    .order-info { @apply rounded-xl bg-campus-sky p-4; }
+    .order-upload { @apply grid gap-3 rounded-xl border border-dashed border-campus-blue bg-campus-sky p-4 sm:p-6; }
+    .order-refund { @apply rounded-xl border border-amber-200 bg-campus-cream p-4 text-yellow-950; }
+    .order-metric { @apply min-w-0 space-y-2 rounded-campus-card bg-white p-5; }
+    .review-stars { @apply flex flex-wrap items-center gap-1 sm:gap-2; }
+    .review-stars label { @apply inline-grid min-h-11 min-w-11 cursor-pointer place-items-center rounded-xl text-3xl leading-none text-campus-muted; }
+    .review-stars label:has(input:focus-visible) { @apply outline-2 outline-offset-2 outline-campus-blue; }
+    .review-stars label.star-selected {
+        @apply text-campus-yellow;
+        -webkit-text-stroke: 1px var(--color-campus-ink);
+    }
+}

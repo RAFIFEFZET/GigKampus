@@ -3,6 +3,7 @@
 @import './base.css';
 @import './components.css';
 @import './marketplace.css';
+@import './orders.css';
 
 @source '../views';
 @source '../../app/Livewire';

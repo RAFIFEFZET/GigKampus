@@ -9,7 +9,7 @@
                 <x-ui.section-header :title="$gig->title">
                     <div class="flex flex-wrap items-center gap-2 text-sm">
                         <x-ui.avatar :user="$gig->seller"/>
-                        <span>{{ $gig->seller->name }}</span>
+                        <a class="font-medium hover:text-campus-link" href="{{ route('seller.show', $gig->seller) }}">{{ $gig->seller->name }}</a>
                         <x-domain.seller-verified-badge :verified="$gig->seller->is_verified"/>
                         <x-ui.badge tone="info">{{ $gig->category->name }}</x-ui.badge>
                     </div>
@@ -36,10 +36,7 @@
                         <p class="text-sm text-campus-muted">Belum ada ulasan</p>
                     @endif
                     @foreach ($reviews as $review)
-                        <div class="border-t border-campus-border pt-3">
-                            <span class="text-sm font-semibold">★ {{ $review->rating }}</span>
-                            <p class="whitespace-pre-wrap text-sm">{{ $review->comment }}</p>
-                        </div>
+                        <x-domain.review-card :$review/>
                     @endforeach
                 </x-ui.card>
             </div>
@@ -53,14 +50,14 @@
                     <div><dt class="muted">Kuota revisi</dt><dd class="font-semibold">{{ $gig->max_revisions }} kali</dd></div>
                 </dl>
                 @if ($canOrder)
-                    <x-ui.button :href="route('orders.index')">Pesan Sekarang</x-ui.button>
+                    <x-ui.button :href="route('checkout.gig', $gig)">Pesan Sekarang</x-ui.button>
                     <x-ui.button variant="secondary" :href="route('chat.index')">Tanya Penjual</x-ui.button>
                 @elseif (! auth('web')->check() && ! auth('admin')->check())
                     <x-ui.button :href="route('login')">Masuk untuk memesan</x-ui.button>
                 @elseif (auth('web')->check() && ! auth('web')->user()->is_verified)
                     <x-ui.button :href="route('ktm.index')" variant="secondary">Verifikasi KTM</x-ui.button>
                 @endif
-                <x-ui.alert tone="warning">Simulasi demo. Jangan melakukan transfer uang sungguhan.</x-ui.alert>
+                <x-domain.simulation-banner/>
             </x-ui.card>
         </div>
     </section>

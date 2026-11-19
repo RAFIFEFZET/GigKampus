@@ -3,7 +3,7 @@
         ['Beranda', 'Beranda', 'home', 'home', 'home'],
         ['Eksplorasi Jasa', 'Eksplor', 'catalog.index', 'catalog.*', 'explore'],
         ['Papan Permintaan', 'Permintaan', 'requests.index', 'requests.*', 'request'],
-        ['Pesanan Saya', 'Pesanan', 'orders.index', 'orders.*', 'orders'],
+        ['Pesanan Saya', 'Pesanan', 'orders.index', ['orders.*', 'checkout.*'], 'orders'],
         ['Studio Seller', 'Studio Seller', 'studio.index', 'studio.*', 'seller'],
     ];
 @endphp

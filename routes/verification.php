@@ -13,7 +13,7 @@ Route::middleware('auth:web')->prefix('verifikasi-ktm')->name('ktm.')->group(fun
 });
 
 Route::middleware('auth:web,admin')->get('/berkas/{jenis}/{id}', PrivateFileController::class)
-    ->whereIn('jenis', ['ktm', 'qris', 'qris-pesanan'])
+    ->whereIn('jenis', ['ktm', 'qris', 'qris-pesanan', 'order_qris_snapshot', 'payment_proof', 'order_delivery'])
     ->whereNumber('id')
     ->name('files.show');
 

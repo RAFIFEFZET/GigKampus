@@ -9,6 +9,8 @@
         @endif
         @if ($gig->seller_rating !== null)
             <x-ui.badge>★ {{ number_format($gig->seller_rating, 1, ',', '.') }}</x-ui.badge>
+        @else
+            <x-ui.badge>Belum ada ulasan</x-ui.badge>
         @endif
     </div>
     <div class="gig-body">
