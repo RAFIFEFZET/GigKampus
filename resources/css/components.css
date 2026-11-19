@@ -1,0 +1,94 @@
+@layer components {
+    .shell { @apply mx-auto w-full max-w-campus px-5 xl:px-0; }
+    .page-section { @apply py-8 sm:py-12; }
+    .stack { @apply flex min-w-0 flex-col gap-5; }
+    .form-grid { @apply grid min-w-0 gap-5 sm:grid-cols-2; }
+    .split-detail { @apply grid min-w-0 gap-6 lg:grid-cols-[2fr_1fr] lg:items-start; }
+    .page-title { @apply space-y-2; }
+    .page-title p, .muted { @apply text-campus-muted; }
+    .card { @apply min-w-0 rounded-campus-card border border-campus-border bg-white p-5 sm:p-6; }
+
+    .btn {
+        @apply inline-flex min-h-11 max-w-full items-center justify-center gap-2 rounded-full px-5 py-2.5 text-center text-sm font-semibold leading-tight transition-colors;
+    }
+    .btn-primary { @apply bg-campus-blue text-white hover:bg-campus-link; }
+    .btn-secondary { @apply bg-campus-sky text-campus-link hover:bg-blue-100; }
+    .btn-outline { @apply border border-campus-border bg-white text-campus-ink hover:bg-campus-background; }
+    .btn-ghost { @apply text-campus-link hover:bg-campus-sky; }
+    .btn-danger { @apply bg-red-50 text-red-800 hover:bg-red-100; }
+    .btn-yellow { @apply bg-campus-yellow text-campus-ink hover:bg-yellow-400; }
+    .badge { @apply inline-flex max-w-full items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold; }
+    .badge-neutral, .alert-neutral { @apply bg-campus-background text-campus-ink; }
+    .badge-info, .badge-blue, .alert-info { @apply bg-campus-sky text-campus-link; }
+    .badge-warning, .badge-yellow, .alert-warning { @apply bg-campus-cream text-yellow-950; }
+    .badge-success, .badge-green, .alert-success { @apply bg-green-100 text-green-800; }
+    .badge-danger, .badge-red, .alert-danger, .alert-error { @apply bg-red-50 text-red-800; }
+    .alert { @apply rounded-campus-field px-4 py-3 text-sm leading-relaxed; }
+
+    .field { @apply block min-w-0 space-y-1.5 text-sm; }
+    .field label { @apply block font-medium; }
+    .field-control {
+        @apply block min-h-11 w-full min-w-0 rounded-campus-field border border-campus-border bg-white px-3.5 py-2.5 text-base text-campus-ink placeholder:text-campus-muted read-only:bg-campus-background disabled:bg-campus-background;
+    }
+    textarea.field-control { @apply min-h-24 resize-y; }
+    .field-error { @apply text-sm text-red-800; }
+    .field-help { @apply text-sm text-campus-muted; }
+    .file-control { @apply bg-campus-background file:mr-2 file:px-2 file:font-medium file:text-campus-link; }
+    .avatar { @apply inline-grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-campus-sky text-xs font-bold text-campus-blue; }
+    .avatar img { @apply size-full object-cover; }
+    .empty-state { @apply rounded-campus-card border border-dashed border-campus-border bg-campus-background p-8 text-center; }
+    .tabs { @apply flex flex-wrap gap-x-5 gap-y-1 border-b border-campus-border text-sm; }
+    .tab { @apply flex min-h-12 items-center border-b-2 border-transparent py-2 font-medium text-campus-muted; }
+    .tab[aria-current='page'] { @apply border-campus-blue font-semibold text-campus-link; }
+    .pagination { @apply flex flex-wrap items-center justify-between gap-3 text-sm; }
+    .dialog {
+        @apply m-auto max-w-none rounded-campus-card bg-white p-6 shadow-xl;
+        width: min(calc(100% - 2rem), 30rem);
+    }
+    .dialog::backdrop { background: rgb(29 29 31 / .48); }
+
+    .site-header { @apply border-b border-campus-border bg-white; }
+    .header-inner { @apply mx-auto flex min-h-14 w-full max-w-[80rem] items-center justify-between gap-3 px-4 xl:min-h-16; }
+    .brand { @apply inline-flex shrink-0 items-center gap-2 text-lg font-bold tracking-tight; }
+    .brand img { @apply size-6; }
+    .header-search { @apply hidden min-w-32 max-w-[18.75rem] flex-1 xl:block; }
+    .search-pill {
+        @apply flex min-h-11 items-center gap-2 rounded-full bg-campus-background px-4;
+    }
+    .search-pill input { @apply w-full min-w-0 bg-transparent py-1 text-sm placeholder:text-campus-muted; }
+    .desktop-nav { @apply hidden flex-shrink-0 items-stretch gap-3.5 xl:flex; }
+    .desktop-nav a { @apply flex min-h-16 items-center border-b-2 border-transparent text-sm whitespace-nowrap; }
+    .desktop-nav a[aria-current='page'] { @apply border-campus-blue font-semibold text-campus-link; }
+    .header-actions { @apply flex shrink-0 items-center gap-2; }
+    .chat-pill { @apply inline-flex min-h-9 items-center gap-1.5 rounded-full bg-campus-sky px-3 text-sm font-semibold text-campus-link; }
+    .counter { @apply inline-grid size-5 shrink-0 place-items-center rounded-full bg-campus-yellow text-[10px] font-bold text-campus-ink; }
+    .account-menu { @apply relative; }
+    .account-menu summary { @apply flex min-h-9 list-none items-center gap-1.5 rounded-full; }
+    .account-menu summary::-webkit-details-marker { display: none; }
+    .account-menu-panel { @apply absolute top-full right-0 z-30 mt-2 w-48 space-y-1 rounded-campus-field border border-campus-border bg-white p-2 shadow-lg; }
+    .account-menu-panel a, .account-menu-panel button { @apply block w-full rounded-lg px-2 py-2 text-left text-sm hover:bg-campus-sky; }
+    .mobile-nav { @apply fixed inset-x-0 bottom-0 z-20 grid min-h-16 grid-cols-5 border-t border-campus-border bg-white xl:hidden; }
+    .mobile-nav a { @apply grid min-w-0 content-center justify-items-center gap-1 px-0.5 py-2 text-center text-[10px] text-campus-muted; }
+    .mobile-nav a[aria-current='page'] { @apply font-semibold text-campus-link; }
+    .mobile-nav img { @apply size-5; }
+    .site-footer { @apply mt-auto bg-campus-background py-6; }
+    .site-body { @apply flex min-h-screen flex-col pb-16 xl:pb-0; }
+    .site-body main, .admin-shell main { @apply min-w-0; }
+
+    .auth-wrap { @apply mx-auto grid w-full max-w-[60rem] overflow-hidden rounded-campus-card bg-white shadow-xl shadow-black/5 md:grid-cols-[46%_54%]; }
+    .auth-illustration { @apply relative hidden min-h-[42rem] overflow-hidden bg-campus-sky p-10 md:block; }
+    .auth-student, .auth-contour { @apply absolute inset-x-0 bottom-0 mx-auto h-[65%] w-full object-contain object-bottom; }
+    .auth-illustration .badge { @apply absolute z-10 shadow-md; }
+    .auth-illustration .badge-warning { @apply bottom-[54%] left-[6%] -rotate-4 bg-campus-yellow; }
+    .auth-illustration .badge-info { @apply right-[6%] bottom-[8%] rotate-3 bg-white; }
+    .auth-panel { @apply grid content-center gap-6 p-6 sm:p-10 lg:p-12; }
+    .auth-tabs { @apply grid grid-cols-2 rounded-full bg-campus-background p-1 text-center text-sm text-campus-muted; }
+    .auth-tabs a { @apply rounded-full px-2 py-2; }
+    .auth-tabs a[aria-current='page'] { @apply bg-white font-semibold text-campus-ink shadow-sm; }
+
+    .admin-shell { @apply mx-auto grid min-h-[85vh] w-full max-w-[90rem] lg:grid-cols-[16rem_1fr]; }
+    .admin-sidebar { @apply flex min-w-0 flex-wrap items-center gap-3 bg-white p-5 lg:flex-col lg:items-stretch; }
+    .admin-sidebar a { @apply rounded-campus-field px-3 py-2 text-sm hover:bg-campus-sky; }
+    .admin-sidebar a[aria-current='page'] { @apply bg-campus-sky font-semibold text-campus-link; }
+    .admin-main { @apply p-5 sm:p-10; }
+}

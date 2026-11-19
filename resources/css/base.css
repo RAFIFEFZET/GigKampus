@@ -1,0 +1,15 @@
+@layer base {
+    body {
+        @apply min-h-screen bg-white font-sans text-campus-ink antialiased;
+        overflow-wrap: anywhere;
+    }
+
+    h1, h2, h3 { @apply font-bold tracking-tight; }
+    h1 { @apply text-3xl sm:text-4xl; }
+    h2 { @apply text-xl sm:text-2xl; }
+    a, button, input, textarea, select, summary { @apply focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-campus-blue; }
+    button:not(:disabled), summary { cursor: pointer; }
+    button:disabled { @apply cursor-not-allowed opacity-60; }
+    [x-cloak] { display: none !important; }
+    ::selection { @apply bg-campus-yellow text-campus-ink; }
+}

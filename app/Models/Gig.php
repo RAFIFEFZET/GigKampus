@@ -6,6 +6,7 @@ use App\Casts\WholeRupiah;
 use App\Enums\GigStatus;
 use App\Models\Concerns\HasPreciseTimestamps;
 use DomainException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -61,6 +62,20 @@ class Gig extends Model
     public function reports(): HasMany
     {
         return $this->hasMany(Report::class, 'gig_id');
+    }
+
+    public function scopePubliclyVisible(Builder $query): void
+    {
+        $query->where('status', GigStatus::Active)
+            ->whereHas('category', fn (Builder $category) => $category->active())
+            ->whereHas('seller', fn (Builder $seller) => $seller->canListGigs());
+    }
+
+    public function scopeWithSellerRating(Builder $query): void
+    {
+        $query->addSelect(['seller_rating' => Review::visible()
+            ->whereColumn('reviews.seller_id', 'gigs.seller_id')
+            ->selectRaw('avg(rating)')]);
     }
 
     protected static function booted(): void

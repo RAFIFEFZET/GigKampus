@@ -8,6 +8,7 @@ use App\Models\Concerns\HasPreciseTimestamps;
 use Carbon\CarbonImmutable;
 use Carbon\CarbonInterface;
 use DomainException;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -60,6 +61,20 @@ class ServiceRequest extends Model
     public function reports(): HasMany
     {
         return $this->hasMany(Report::class, 'service_request_id');
+    }
+
+    public function scopePubliclyVisible(Builder $query): void
+    {
+        $query->where('status', ServiceRequestStatus::Open)
+            ->where('is_hidden', false)
+            ->where('deadline_date', '>=', now('Asia/Jakarta')->toDateString())
+            ->whereHas('buyer', fn (Builder $buyer) => $buyer->eligibleStudent())
+            ->whereHas('category', fn (Builder $category) => $category->active());
+    }
+
+    public function isPubliclyVisible(): bool
+    {
+        return $this->acceptsOffers() && $this->category?->is_active === true;
     }
 
     protected static function booted(): void

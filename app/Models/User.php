@@ -6,6 +6,7 @@ use App\Contracts\BuyerInterface;
 use App\Contracts\SellerInterface;
 use App\Models\Concerns\HasBuyerCapabilities;
 use App\Models\Concerns\HasSellerCapabilities;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
@@ -108,6 +109,18 @@ class User extends BaseAccount implements BuyerInterface, SellerInterface
     public function canCreateNewTransaction(): bool
     {
         return $this->is_verified && ! $this->is_suspended;
+    }
+
+    public function scopeEligibleStudent(Builder $query): void
+    {
+        $query->where('is_verified', true)->where('is_suspended', false);
+    }
+
+    public function scopeCanListGigs(Builder $query): void
+    {
+        $query->eligibleStudent()->where(fn (Builder $methods) => $methods
+            ->whereNotNull('bank_id')
+            ->orWhereNotNull('qris_image_path'));
     }
 
     public function canAccessExistingOrder(Order $order): bool

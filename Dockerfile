@@ -63,6 +63,7 @@ COPY routes/ routes/
 COPY storage/ storage/
 COPY tests/ tests/
 COPY --from=assets /build/public/build/ public/build/
+COPY docker/uploads.ini /usr/local/etc/php/conf.d/99-gigkampus-uploads.ini
 COPY --chmod=755 docker/start-app.sh /usr/local/bin/start-app
 # Compose injects the runtime environment. The image has a blank dotenv file for Laravel.
 RUN touch .env \

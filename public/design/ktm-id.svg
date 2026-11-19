@@ -1,0 +1,13 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="90" height="50" viewBox="0 0 90 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="identity-card">
+<path id="Vector" d="M80 1H10C5.02944 1 1 5.02944 1 10V40C1 44.9706 5.02944 49 10 49H80C84.9706 49 89 44.9706 89 40V10C89 5.02944 84.9706 1 80 1Z" fill="white" stroke-width="2" stroke="#0071E3"/>
+<g id="portrait">
+<path id="Vector_2" d="M22 25C25.3137 25 28 22.3137 28 19C28 15.6863 25.3137 13 22 13C18.6863 13 16 15.6863 16 19C16 22.3137 18.6863 25 22 25Z" fill="#0071E3"/>
+<path id="Vector_3" d="M12 36C12 29.8 16.3 26 22 26C27.7 26 32 29.8 32 36C32 37.1 31.1 38 30 38H14C12.9 38 12 37.1 12 36Z" fill="#0071E3"/>
+</g>
+<g id="data-lines">
+<path id="Vector_4" d="M43 21H66" stroke-width="3" stroke-linecap="round" stroke="#0071E3"/>
+<path id="Vector_5" d="M43 31H60" stroke-width="3" stroke-linecap="round" stroke="#0071E3"/>
+</g>
+</g>
+</svg>
