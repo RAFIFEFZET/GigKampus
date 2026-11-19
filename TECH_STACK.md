@@ -1,6 +1,6 @@
 # GigKampus — Technology Stack
 
-Status: arsitektur dan pilihan teknologi disetujui pada 18 November 2026. Rilis sasaran adalah demo lokal, siap maksimal 22 November malam. Dokumen ini mendukung [PRD.md](PRD.md) dan [ERD_ARCHITECTURE.md](ERD_ARCHITECTURE.md).
+Arsitektur dan pilihan teknologi disetujui pada 18 November 2026. Bootstrap Fase 1 dibangun dan diuji pada 19 November 2026. Rilis sasaran adalah demo lokal, siap maksimal 22 November malam. Dokumen ini mendukung [PRD.md](PRD.md) dan [ERD_ARCHITECTURE.md](ERD_ARCHITECTURE.md).
 
 ## 1. Technology Overview
 
@@ -163,28 +163,28 @@ Eksternal yang boleh hanya tautan hasil HTTPS milik pengguna. Server tidak otoma
 | livewire/livewire | UI server-driven |
 | laravel/fortify | Fondasi actions autentikasi |
 | laravel/reverb | Server WebSocket |
-| laravel-echo | Client subscription realtime |
+| laravel-echo, pusher-js | Client subscription realtime melalui protokol Reverb |
 | Alpine bawaan Livewire | Interaksi ringan; jangan instal instance kedua |
 | tailwindcss, @tailwindcss/vite | Styling |
 | vite, laravel-vite-plugin | Bundling/integrasi aset |
 | phpunit/phpunit | Pengujian domain/integrasi |
 | @playwright/test | Pengujian browser |
 
-Dependensi transitif mengikuti resolusi Composer/npm; tidak dianggap pemilihan framework tambahan. Versi tepat paket pendukung yang belum diverifikasi adalah TBD. Tidak menambah library chat, OCR cloud, editor HTML, kalender, atau bank lookup eksternal tanpa kebutuhan baru.
+Dependensi transitif mengikuti resolusi Composer/npm. Versi yang dipakai pada Fase 1 dicatat di Bagian 14. Tidak menambah library chat, OCR cloud, editor HTML, kalender, atau bank lookup eksternal tanpa kebutuhan baru.
 
 Ekstensi PHP mengikuti persyaratan Laravel, PostgreSQL PDO, pemeriksaan file, dukungan Argon2id, dan worker Linux. Tesseract membutuhkan Leptonica serta traineddata yang sesuai. Model bahasa/parameter OCR dicatat dan diuji pada fixture; tidak menebak NIM atau menganggap confidence sebagai persetujuan mahasiswa.
 
 ## 11. Development Tools
 
 - Composer untuk PHP, npm untuk frontend, Vite untuk development/build.
-- Docker Compose untuk runtime lokal terisolasi; Node digunakan pada tahap build aset.
+- Docker Compose untuk runtime lokal terisolasi. Node digunakan untuk build aset dan tersedia di image app.
 - Migration dan seeder Laravel; data contoh fiktif dengan seed deterministik.
-- Git dapat digunakan saat implementasi repo disiapkan; dokumentasi ini tidak mengklaim repo/branch/CI sudah dibuat.
+- Source aplikasi dan lockfile Composer/npm disimpan di repo Git.
 - Log aplikasi terstruktur/rotasi lokal dan failed_jobs untuk diagnosis; tidak menambahkan SaaS monitoring.
 - File .env/rahasia tidak dimasukkan ke audit atau artefak publik.
 - Aset demo dibundel lokal, bukan bergantung CDN saat presentasi.
 
-Di host telah terdeteksi Herd/PHP, Composer, Node/npm, Docker/WSL, dan client PostgreSQL 16. Versi/kesiapan runtime host tidak diasumsikan sama dengan baseline proyek. Docker engine dan build belum diuji pada tahap dokumentasi.
+Fase 1 dibangun dengan Docker Desktop di Windows menggunakan Linux containers. Runtime aplikasi dan dependensi berasal dari image dan lockfile proyek.
 
 ## 12. Testing Tools
 
@@ -206,12 +206,12 @@ Semua Must Have harus lulus acceptance. Should Have diuji ketika benar-benar dii
 ### Lingkungan utama
 
 Docker Compose lokal, satu instance aplikasi:
-- Nginx melayani public assets dan meneruskan request ke PHP-FPM.
+- Nginx melayani aset publik di port host 8000, meneruskan request ke PHP-FPM, dan memproksi WebSocket Reverb.
 - PHP-FPM menjalankan Laravel.
-- PostgreSQL 18 pada jaringan internal.
+- PostgreSQL 18 pada port 5432 di jaringan internal dan port 5433 di loopback host.
 - Worker OCR khusus queue ocr.
 - Worker notifikasi/broadcast khusus queue default.
-- Reverb sebagai proses realtime dari codebase aplikasi yang sama.
+- Reverb sebagai proses realtime dari codebase aplikasi yang sama. Laravel mengirim broadcast melalui jaringan internal ke `reverb:8080`.
 
 Ini beberapa proses runtime untuk satu aplikasi, bukan pemisahan kepemilikan data per modul. Database PostgreSQL host 16 tidak dimigrasi/dihapus untuk menyiapkan demo. Port host dipilih agar tidak berbenturan dengan Herd/database yang sudah tersedia.
 
@@ -230,34 +230,39 @@ Ini beberapa proses runtime untuk satu aplikasi, bukan pemisahan kepemilikan dat
 
 21 tabel pada ERD adalah tabel bisnis. Migration bookkeeping dan database queue memerlukan tabel operasional seperti migrations, jobs, dan failed_jobs. Tabel job_batches hanya digunakan jika fitur batching benar-benar dipakai; session/cache berbasis file tidak membutuhkan tabel tambahan. Pemulihan password hold tidak diaktifkan hanya karena dukungan framework tersedia.
 
+Fase 1 membuat tiga tabel operasional `migrations`, `jobs`, dan `failed_jobs`. Compose menjalankan migrasi saat app mulai dan menunggu PHP-FPM siap sebelum memulai worker dan Reverb.
+
 ### VPS
 
 VPS adalah opsi sesudah inti stabil; provider, biaya, kapasitas, domain, dan provisioning masih TBD. Tidak ada pembelian/deployment yang diotorisasi oleh dokumen ini. Jika dipilih kemudian, gunakan HTTPS/WSS, backup, process restart, dan konfigurasi single-instance yang diuji.
 
 ## 14. Technology Versions
 
-Baseline dipilih menurut persetujuan “rilis stabil terbaru yang kompatibel”; tanggal verifikasi sumber 18 November 2026. Versi ini **belum merupakan bukti dependency installation/build berhasil**.
+Versi aktual Fase 1 diverifikasi pada 19 November 2026 dari lockfile, container, dan browser. Seluruh versi mayor baseline berhasil dibangun.
 
-| Teknologi | Baseline terpilih | Ketepatan versi |
+| Teknologi | Versi aktual | Acuan |
 |---|---|---|
-| Laravel | 13.x | Patch TBD; support PHP 8.3–8.5 terverifikasi |
-| PHP | 8.5.x | Patch runtime TBD; halaman unduhan saat verifikasi menampilkan 8.5.12 |
-| Livewire | 4.x | Patch TBD |
-| Alpine.js | Bundel Livewire | Versi tepat mengikuti lockfile Livewire |
-| Tailwind CSS | 4.3.x | Patch TBD |
-| PostgreSQL | 18.x | Minor/image patch TBD saat image dikunci |
-| Tesseract | 5.5.4 | Rilis sumber terverifikasi; artifact Linux/build perlu diuji |
-| Node.js | 26.x LTS | Patch TBD |
-| Fortify, Reverb, Echo | Stabil kompatibel | Versi tepat TBD |
-| Vite dan Laravel Vite plugin | Stabil kompatibel | Versi tepat TBD |
-| Composer, npm | Stabil kompatibel | Versi tepat TBD |
-| PHPUnit, Playwright | Stabil kompatibel | Versi tepat TBD |
-| Docker Engine/Compose, Nginx, base Linux | Stabil kompatibel | Versi/image digest TBD |
-| Argon2id | Algoritme melalui PHP/Laravel | Ketersediaan runtime dan parameter diverifikasi saat build |
+| Laravel | 13.43.0 | `composer.lock` |
+| PHP | 8.5.12 | PHP-FPM dan CLI di image app |
+| Livewire | 4.4.8 | `composer.lock` |
+| Alpine.js | 3.17.5 | Bundel Livewire yang dimuat di browser |
+| Tailwind CSS dan plugin Vite Tailwind | 4.3.5 | `package-lock.json` |
+| PostgreSQL | 18.7 | Image PostgreSQL |
+| Tesseract | 5.5.4 | Build dari sumber dengan Leptonica 1.84.1 dan traineddata `eng`, `ind`, `osd` |
+| Node.js | 26.13.1 LTS (Lithium) | Image Node dan runtime app |
+| Fortify | 1.43.0 | `composer.lock` |
+| Reverb | 1.14.0 | `composer.lock` |
+| Echo dan Pusher JS | 2.6.3 dan 8.6.0 | `package-lock.json` |
+| Vite dan Laravel Vite plugin | 8.3.8 dan 3.2.1 | `package-lock.json` |
+| Composer dan npm | 2.11.2 dan 11.20.0 | Toolchain di image app |
+| PHPUnit dan Playwright | 12.5.44 dan 1.65.1 | Lockfile Composer dan npm |
+| Docker Engine dan Compose | 29.9.2 dan 5.6.1 | Host Windows melalui Docker Desktop |
+| Nginx dan Linux | 1.30.7 dan Debian 13 (Trixie) | Image Nginx dan app |
+| Argon2id | Driver hash Laravel aktif | Hash aktual di container menghasilkan Argon2id |
 
 Referensi utama: [Laravel support](https://laravel.com/framework/docs/13.x/releases), [PHP downloads](https://www.php.net/downloads.php), [Livewire 4](https://livewire.laravel.com/docs/4.x/installation), [Tailwind Vite](https://tailwindcss.com/docs/installation/using-vite), [PostgreSQL versioning](https://www.postgresql.org/support/versioning/), [Tesseract 5.5.4](https://github.com/tesseract-ocr/tesseract/releases/tag/5.5.4), [Node releases](https://nodejs.org/en/about/previous-releases).
 
-Setelah resolusi dependensi, simpan composer.lock/package-lock.json dan pin image yang teruji. Jangan mengganti versi yang gagal dengan versi lain secara diam-diam; catat perubahan kompatibilitas yang bermakna.
+Lockfile Composer/npm tersedia di repo. Digest image teruji tercantum di [Dockerfile](Dockerfile) dan [Compose](compose.yaml).
 
 ## 15. Rationale for Technology Selection
 

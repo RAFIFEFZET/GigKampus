@@ -1,0 +1,7 @@
+@import 'tailwindcss';
+
+@theme {
+    --color-campus-blue: #0071e3;
+    --color-campus-sky: #eef5ff;
+    --color-campus-background: #f5f5f7;
+}
