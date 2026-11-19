@@ -74,6 +74,8 @@ class ProcessKtmOcr implements ShouldQueue
             );
             if ($error !== null) {
                 Inbox::ktm($request, 'Foto KTM perlu diunggah ulang', $error);
+            } else {
+                Inbox::ktmPendingReview($request);
             }
         });
     }

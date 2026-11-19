@@ -95,6 +95,14 @@ class KtmVerificationFlowTest extends PostgresTestCase
             self::assertStringContainsString('Unggah ulang', $result->ocr_error);
             self::assertTrue($student->notifications()->where('type', 'ktm.ocr_failed')
                 ->where('data->verification_id', $result->id)->exists());
+        } else {
+            $admins = Admin::all();
+            self::assertNotEmpty($admins);
+            foreach ($admins as $admin) {
+                $notification = $admin->notifications()->where('type', 'ktm.pending_review')
+                    ->where('data->verification_id', $result->id)->sole();
+                self::assertSame(route('admin.ktm.show', $result, false), $notification->destinationUrl());
+            }
         }
     }
 

@@ -25,18 +25,12 @@
             @endforeach
         </nav>
         <div class="header-actions">
-            @unless ($admin)
+            @if ($student || $admin)
+                <livewire:communication-badges/>
+            @else
                 <a class="chat-pill" href="{{ route('chat.index') }}">
                     <img src="{{ asset('design/chat.svg') }}" alt="" width="18" height="18">
                     Chat
-                    @if ($unreadChat)
-                        <span class="counter" aria-label="{{ $unreadChat }} pesan belum dibaca">{{ min($unreadChat, 99) }}</span>
-                    @endif
-                </a>
-            @endunless
-            @if ($student)
-                <a class="grid size-9 shrink-0 place-items-center rounded-full hover:bg-campus-background" href="{{ route('inbox.index') }}" aria-label="Notifikasi">
-                    <img src="{{ asset('design/bell.svg') }}" alt="" width="18" height="18">
                 </a>
             @endif
             @if ($student || $admin)

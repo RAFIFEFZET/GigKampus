@@ -57,18 +57,6 @@ final class OrderController
         return view('pages.orders.qris', $data);
     }
 
-    public function chat(Order $order): View
-    {
-        Gate::authorize('view', $order);
-
-        return view('pages.placeholder', [
-            'title' => 'Chat Pesanan',
-            'description' => 'Percakapan dan pengiriman bukti refund dalam pesanan ini tersedia pada Fase 4.',
-            'back' => route('orders.show', $order),
-            'backLabel' => 'Detail Pesanan',
-        ]);
-    }
-
     public function studio(Request $request): View
     {
         $seller = $request->user();
@@ -87,7 +75,7 @@ final class OrderController
         Gate::authorize('view', $order);
         $student = $request->user('web');
         $order->load([
-            'buyer', 'seller', 'review.reviewer', 'firstDelivery',
+            'buyer', 'seller', 'review.reviewer', 'firstDelivery', 'chatRoom',
             'payment.proofs' => fn ($proofs) => $proofs->orderByDesc('attempt_no'),
             'revisions' => fn ($revisions) => $revisions->orderByDesc('id'),
             'deliveries.revision',

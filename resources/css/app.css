@@ -4,6 +4,7 @@
 @import './components.css';
 @import './marketplace.css';
 @import './orders.css';
+@import './chat.css';
 
 @source '../views';
 @source '../../app/Livewire';

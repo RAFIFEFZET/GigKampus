@@ -23,6 +23,7 @@
                         Lihat Penawaran
                     @endcan
                 </x-ui.button>
+                <x-domain.offer-chat-button :$offer :service-request="$offer->serviceRequest"/>
             </x-ui.card>
         @empty
             <x-ui.empty-state title="Belum ada penawaran">

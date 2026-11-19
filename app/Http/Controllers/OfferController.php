@@ -22,7 +22,7 @@ final class OfferController extends Controller
     {
         return view('pages.studio.offers.index', [
             'offers' => $request->user()->priceOffers()
-                ->with(['serviceRequest.buyer', 'serviceRequest.category'])
+                ->with(['serviceRequest.buyer', 'serviceRequest.category', 'seller'])
                 ->latest('offered_at')->orderByDesc('id')->paginate(12),
         ]);
     }

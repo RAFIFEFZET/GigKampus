@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ChatMessage;
 use App\Models\KtmVerificationRequest;
 use App\Models\Order;
 use App\Models\OrderDelivery;
@@ -55,6 +56,14 @@ class PrivateFileController extends Controller
                 $name = 'hasil-pesanan-'.$id.(preg_match('/\A[a-z0-9]{1,8}\z/', $extension) ? '.'.$extension : '');
 
                 return $disk->download($delivery->file_path, $name, [...$headers, 'Content-Type' => 'application/octet-stream']);
+            case 'chat_attachment':
+                $message = ChatMessage::query()->with('chatRoom')->findOrFail($id);
+                Gate::authorize('view', $message->chatRoom);
+                abort_unless($message->file_path && $disk->exists($message->file_path), 404);
+                $extension = strtolower(pathinfo($message->original_filename ?? '', PATHINFO_EXTENSION));
+                $name = 'lampiran-chat-'.$id.(preg_match('/\A[a-z0-9]{1,8}\z/', $extension) ? '.'.$extension : '');
+
+                return $disk->download($message->file_path, $name, [...$headers, 'Content-Type' => 'application/octet-stream']);
             default:
                 abort(404);
         }

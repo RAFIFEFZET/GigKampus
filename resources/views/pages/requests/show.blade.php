@@ -59,6 +59,7 @@
                             @if (in_array($offer->id, $acceptableOfferIds, true))
                                 <x-ui.button class="self-start" variant="secondary" :href="route('checkout.offer', $offer)">Terima Penawaran</x-ui.button>
                             @endif
+                            <x-domain.offer-chat-button :$offer :$serviceRequest/>
                         </x-ui.card>
                     @endforeach
                 @elseif (auth('web')->id() === $serviceRequest->buyer_id)

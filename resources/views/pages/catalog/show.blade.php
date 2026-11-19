@@ -51,7 +51,10 @@
                 </dl>
                 @if ($canOrder)
                     <x-ui.button :href="route('checkout.gig', $gig)">Pesan Sekarang</x-ui.button>
-                    <x-ui.button variant="secondary" :href="route('chat.index')">Tanya Penjual</x-ui.button>
+                    <form action="{{ route('chat.gig', $gig) }}" method="post">
+                        @csrf
+                        <x-ui.button class="w-full" variant="secondary" type="submit">Tanya Penjual</x-ui.button>
+                    </form>
                 @elseif (! auth('web')->check() && ! auth('admin')->check())
                     <x-ui.button :href="route('login')">Masuk untuk memesan</x-ui.button>
                 @elseif (auth('web')->check() && ! auth('web')->user()->is_verified)

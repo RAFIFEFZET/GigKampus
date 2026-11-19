@@ -8,6 +8,7 @@ use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class ChatRoom extends Model
 {
@@ -68,6 +69,11 @@ class ChatRoom extends Model
     public function reports(): HasMany
     {
         return $this->hasMany(Report::class, 'chat_room_id');
+    }
+
+    public function latestMessage(): HasOne
+    {
+        return $this->hasOne(ChatMessage::class, 'chat_room_id')->latestOfMany('id');
     }
 
     public function hasParticipant(User $user): bool

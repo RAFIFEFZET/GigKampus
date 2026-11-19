@@ -1,0 +1,37 @@
+@layer components {
+    .chat-workspace { @apply mx-auto grid w-full max-w-[90rem] min-w-0 bg-white lg:grid-cols-[minmax(0,1fr)_minmax(0,2.5fr)]; }
+    .chat-open { @apply xl:grid-cols-[minmax(0,1fr)_minmax(0,2.55fr)_minmax(0,.95fr)]; height: calc(100dvh - 4rem); }
+    .chat-sidebar { @apply min-h-0 min-w-0 overflow-y-auto border-r border-campus-border px-4 py-6; }
+    .chat-open .chat-sidebar { @apply hidden lg:block; }
+    .chat-room-item { @apply flex min-w-0 items-start gap-3 rounded-2xl p-3 hover:bg-campus-background; }
+    .chat-room-selected { @apply bg-campus-sky; }
+    .chat-empty { @apply hidden place-items-center bg-campus-background p-6 lg:grid; }
+    .chat-conversation { @apply flex min-h-0 min-w-0 flex-col border-campus-border bg-white; }
+    .chat-top { @apply flex min-w-0 flex-wrap items-center justify-between gap-2 border-b border-campus-border px-4 py-2 sm:px-5; }
+    .chat-top .btn { @apply px-2 text-xs sm:px-3; }
+    .chat-back { @apply rounded-full bg-campus-background px-2 py-2 text-xs font-semibold sm:px-3; }
+    .chat-party { @apply flex items-center gap-3 px-4 py-3 sm:px-5; }
+    .chat-order-strip { @apply mx-4 grid gap-2 rounded-xl bg-campus-sky p-3 sm:mx-5; }
+    .chat-order-strip > .badge { @apply justify-self-start; }
+    .chat-history { @apply min-h-0 flex-1 overflow-y-auto px-4 py-5 sm:px-5; }
+    .chat-message { @apply mr-auto flex w-fit max-w-[88%] min-w-0 flex-col items-start gap-1 sm:max-w-[76%]; }
+    .chat-message-own { @apply mr-0 ml-auto items-end; }
+    .chat-bubble { @apply w-full min-w-0 space-y-1 rounded-2xl rounded-bl-sm bg-campus-background px-3 py-2.5 text-sm leading-relaxed; }
+    .chat-message-own .chat-bubble { @apply rounded-bl-2xl rounded-br-sm bg-campus-blue text-white; }
+    .chat-attachment { @apply mt-1 flex min-w-0 items-center gap-2 rounded-xl bg-white p-2 text-campus-ink; }
+    .chat-attachment img { @apply shrink-0; }
+    .chat-context { @apply hidden min-h-0 min-w-0 space-y-4 overflow-y-auto bg-campus-background p-5 xl:block; }
+    .chat-compose { @apply shrink-0 border-t border-campus-border p-3 sm:px-5; }
+    .chat-compose-row { @apply flex min-w-0 items-center gap-2; }
+    .chat-icon-button, .chat-send-button { @apply grid size-11 shrink-0 place-items-center rounded-full; }
+    .chat-icon-button { @apply bg-campus-background; }
+    .chat-send-button { @apply bg-campus-blue hover:bg-campus-link; }
+    .chat-input { @apply min-h-11 min-w-0 flex-1 resize-y rounded-3xl bg-campus-background px-4 py-2.5 text-base; max-height: 10rem; }
+    .chat-page:has(.chat-open) .site-footer { display: none; }
+    @media (64rem <= width < 80rem) {
+        .chat-open { height: calc(100dvh - 7.5rem); }
+    }
+    @media (width < 64rem) {
+        .chat-page:has(.chat-open) .site-header { display: none; }
+    }
+}

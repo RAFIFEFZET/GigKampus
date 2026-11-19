@@ -4,6 +4,7 @@ namespace App\Services\Orders;
 
 use App\Enums\ChatRoomStatus;
 use App\Enums\PaymentMethod;
+use App\Events\ChatChanged;
 use App\Exceptions\CheckoutConflict;
 use App\Models\ChatRoom;
 use App\Models\Gig;
@@ -102,5 +103,6 @@ final class CheckoutOrder
             ->lock('for no key update')->first() ?? (new ChatRoom)->forceFill($context);
 
         $order->chatRoom()->save($room);
+        event(new ChatChanged($room->id, $room->buyer_id, $room->seller_id));
     }
 }

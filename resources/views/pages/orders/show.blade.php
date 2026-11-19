@@ -86,6 +86,9 @@
                 @endif
             </div>
             <div class="stack">
+                @if (($isBuyer || $isSeller) && $order->chatRoom)
+                    <x-ui.button variant="secondary" :href="route('orders.chat', $order)">Chat Pesanan</x-ui.button>
+                @endif
                 @if ($payment)
                     <x-domain.payment-destination-card :$order :method="$payment->payment_method"/>
                     <x-ui.button :href="route('orders.payment.show', $order)"

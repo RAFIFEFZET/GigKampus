@@ -2,6 +2,7 @@
 
 namespace App\Services\Orders;
 
+use App\Events\ChatChanged;
 use App\Models\Order;
 use App\Models\User;
 use App\Services\Audit;
@@ -33,9 +34,10 @@ final class OrderActivity
     public static function archiveChat(Order $order): void
     {
         $room = $order->chatRoom()->lockForUpdate()->first();
-        if ($room !== null) {
+        if ($room !== null && ! $room->isArchived()) {
             $room->archive();
             $room->saveOrFail();
+            event(new ChatChanged($room->id, $room->buyer_id, $room->seller_id));
         }
     }
 }

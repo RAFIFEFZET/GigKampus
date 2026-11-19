@@ -3,5 +3,9 @@
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <title>@hasSection('title')@yield('title') · @endif GigKampus</title>
 <link rel="icon" href="{{ asset('design/logo.svg') }}" type="image/svg+xml">
-@vite('resources/css/app.css')
+@if (config('broadcasting.default') === 'reverb' && ($realtimeId = auth('admin')->id() ?? auth('web')->id()))
+    <meta name="reverb-key" content="{{ config('broadcasting.connections.reverb.key') }}">
+    <meta name="realtime-audience" content="{{ auth('admin')->check() ? 'admin' : 'user' }}.{{ $realtimeId }}">
+@endif
+@vite(['resources/css/app.css', 'resources/js/app.js'])
 @livewireStyles

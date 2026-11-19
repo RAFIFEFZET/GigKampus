@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Admin;
 use App\Models\KtmVerificationRequest;
 use App\Models\Notification;
 use App\Models\PriceOffer;
@@ -21,6 +22,21 @@ final class Inbox
         self::student($verification->user_id, 'ktm.'.$verification->status->value, $title, $message, [
             'verification_id' => $verification->id,
         ]);
+    }
+
+    public static function ktmPendingReview(KtmVerificationRequest $verification): void
+    {
+        Admin::query()->eachById(function (Admin $admin) use ($verification): void {
+            $admin->notifications()->forceCreate([
+                'type' => 'ktm.pending_review',
+                'title' => 'KTM siap diperiksa',
+                'body' => 'Ada pengajuan verifikasi KTM yang menunggu pemeriksaan.',
+                'data' => [
+                    'verification_id' => $verification->id,
+                    'relative_url' => route('admin.ktm.show', $verification, false),
+                ],
+            ]);
+        });
     }
 
     private static function student(int $recipient, string $type, string $title, string $message, array $data): void
