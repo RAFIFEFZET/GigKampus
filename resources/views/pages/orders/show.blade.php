@@ -15,9 +15,7 @@
             <x-domain.status-badge :status="$order->status"/>
         </div>
         <x-domain.simulation-banner/>
-        @if ($order->status === \App\Enums\OrderStatus::Disputed)
-            <x-ui.alert tone="warning" title="Pesanan dalam sengketa">Tindakan transaksi dijeda sampai proses sengketa selesai.</x-ui.alert>
-        @endif
+        <x-domain.dispute-banner :$order/>
         <div class="order-columns">
             <div class="stack">
                 <x-ui.card class="stack">
@@ -88,6 +86,12 @@
             <div class="stack">
                 @if (($isBuyer || $isSeller) && $order->chatRoom)
                     <x-ui.button variant="secondary" :href="route('orders.chat', $order)">Chat Pesanan</x-ui.button>
+                @endif
+                @if (($isBuyer || $isSeller) && $order->status !== \App\Enums\OrderStatus::Disputed)
+                    <x-domain.report-link type="order_complaint" :subject="$order">Ajukan Komplain</x-domain.report-link>
+                    @if ($order->reports()->exists())
+                        <a href="{{ route('reports.index', ['order' => $order->id]) }}" class="text-sm font-semibold text-campus-link">Lihat laporan dan klarifikasi</a>
+                    @endif
                 @endif
                 @if ($payment)
                     <x-domain.payment-destination-card :$order :method="$payment->payment_method"/>

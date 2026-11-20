@@ -12,6 +12,7 @@ require __DIR__.'/order-payments.php';
 require __DIR__.'/order-work.php';
 require __DIR__.'/chat.php';
 require __DIR__.'/notifications.php';
+require __DIR__.'/reports.php';
 require __DIR__.'/channels.php';
 
 Route::post('/broadcasting/auth', [BroadcastController::class, 'authenticate'])

@@ -61,6 +61,7 @@
                     <x-ui.button :href="route('ktm.index')" variant="secondary">Verifikasi KTM</x-ui.button>
                 @endif
                 <x-domain.simulation-banner/>
+                <x-domain.report-link type="gig_report" :subject="$gig">Laporkan Gig</x-domain.report-link>
             </x-ui.card>
         </div>
     </section>

@@ -6,6 +6,7 @@ use App\Enums\ActorType;
 use App\Models\Admin;
 use App\Models\AuditLog;
 use App\Models\Order;
+use App\Models\Report;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -18,12 +19,15 @@ final class Audit
         array $before = [],
         array $after = [],
         ?string $reason = null,
+        ?Report $report = null,
     ): void {
         $type = match (true) {
             $actor instanceof User => ActorType::User,
             $actor instanceof Admin => ActorType::Admin,
             default => ActorType::System,
         };
+
+        $report ??= $entity instanceof Report ? $entity : null;
 
         AuditLog::query()->forceCreate([
             'actor_type' => $type,
@@ -32,7 +36,8 @@ final class Audit
             'action' => $action,
             'entity_type' => $entity->getTable(),
             'entity_id' => $entity->getKey(),
-            'order_id' => $entity instanceof Order ? $entity->getKey() : null,
+            'order_id' => $entity instanceof Order ? $entity->getKey() : $report?->order_id,
+            'report_id' => $report?->getKey(),
             'before_data' => $before ?: null,
             'after_data' => $after ?: null,
             'reason' => $reason,

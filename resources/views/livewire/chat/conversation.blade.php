@@ -27,10 +27,7 @@
             <header class="chat-top">
                 <a href="{{ route('chat.index') }}" class="chat-back">← Kembali</a>
                 <h1 class="text-lg">{{ $room->order ? 'Chat Pesanan' : 'Chat Room' }}</h1>
-                <x-ui.modal title="Laporkan Percakapan">
-                    <x-slot:trigger><x-ui.button variant="ghost">Laporkan Percakapan</x-ui.button></x-slot:trigger>
-                    <p>Formulir laporan dan peninjauan Admin tersedia pada Fase 4B.</p>
-                </x-ui.modal>
+                <x-domain.report-link type="chat_report" :subject="$room">Laporkan Percakapan</x-domain.report-link>
             </header>
             <div class="chat-party">
                 <x-ui.avatar :user="$counterpart" class="size-10"/>

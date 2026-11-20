@@ -20,6 +20,7 @@
             <x-ui.card class="space-y-2 bg-campus-cream">
                 <h2 class="text-base">Laporan Menunggu</h2>
                 <p class="text-3xl font-bold">{{ $pendingReportCount }}</p>
+                <a href="{{ route('admin.reports.index') }}" class="text-sm font-semibold text-campus-link hover:underline">Buka Antrean Laporan</a>
             </x-ui.card>
         </div>
 

@@ -5,6 +5,7 @@
 @import './marketplace.css';
 @import './orders.css';
 @import './chat.css';
+@import './moderation.css';
 
 @source '../views';
 @source '../../app/Livewire';

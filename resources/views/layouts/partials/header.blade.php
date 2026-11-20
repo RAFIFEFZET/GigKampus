@@ -44,6 +44,7 @@
                         @if ($student)
                             <a href="{{ route('profile') }}">Profil</a>
                             <a href="{{ route('ktm.index') }}">Verifikasi KTM</a>
+                            <a href="{{ route('reports.index') }}">Laporan dan Klarifikasi</a>
                         @else
                             <a href="{{ route('admin.index') }}">Dashboard Admin</a>
                         @endif

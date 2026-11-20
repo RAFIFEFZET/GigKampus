@@ -10,4 +10,5 @@
     </div>
     <p class="my-2 tracking-wider text-amber-700" aria-label="{{ $review->rating }} dari 5 bintang">{{ str_repeat('★', $review->rating) }}{{ str_repeat('☆', 5 - $review->rating) }}</p>
     @if ($review->comment)<p class="whitespace-pre-wrap text-sm">{{ $review->comment }}</p>@endif
+    <x-domain.report-link type="review_report" :subject="$review" class="mt-2">Laporkan Ulasan</x-domain.report-link>
 </article>

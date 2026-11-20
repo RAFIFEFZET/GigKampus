@@ -25,6 +25,7 @@
                         <div><dt class="muted text-sm">Anggaran</dt><dd class="font-semibold">Rp{{ number_format($serviceRequest->budget_min, 0, ',', '.') }} – Rp{{ number_format($serviceRequest->budget_max, 0, ',', '.') }}</dd></div>
                         <div><dt class="muted text-sm">Tenggat (WIB)</dt><dd>{{ $serviceRequest->deadline_date->locale('id')->translatedFormat('j F Y') }}</dd></div>
                     </dl>
+                    <div><x-domain.report-link type="request_report" :subject="$serviceRequest">Laporkan Permintaan Jasa</x-domain.report-link></div>
                     @if ($canEdit || $canClose)
                         <div class="flex flex-wrap items-center gap-3">
                             @if ($canEdit)

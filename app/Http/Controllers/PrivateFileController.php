@@ -2,13 +2,17 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Admin;
 use App\Models\ChatMessage;
 use App\Models\KtmVerificationRequest;
 use App\Models\Order;
 use App\Models\OrderDelivery;
 use App\Models\PaymentProof;
+use App\Models\Report;
+use App\Models\ReportClarificationResponse;
 use App\Models\User;
 use App\Policies\QrisFilePolicy;
+use App\Policies\ReportPolicy;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -16,7 +20,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PrivateFileController extends Controller
 {
-    public function __invoke(Request $request, string $jenis, string $id, QrisFilePolicy $qris): StreamedResponse
+    public function __invoke(Request $request, string $jenis, string $id, QrisFilePolicy $qris, ReportPolicy $reports): StreamedResponse
     {
         // PostgreSQL IDs are positive signed 64-bit integers.
         abort_if(filter_var($id, FILTER_VALIDATE_INT, ['options' => ['min_range' => 1]]) === false, 404);
@@ -58,12 +62,24 @@ class PrivateFileController extends Controller
                 return $disk->download($delivery->file_path, $name, [...$headers, 'Content-Type' => 'application/octet-stream']);
             case 'chat_attachment':
                 $message = ChatMessage::query()->with('chatRoom')->findOrFail($id);
-                Gate::authorize('view', $message->chatRoom);
-                abort_unless($message->file_path && $disk->exists($message->file_path), 404);
-                $extension = strtolower(pathinfo($message->original_filename ?? '', PATHINFO_EXTENSION));
-                $name = 'lampiran-chat-'.$id.(preg_match('/\A[a-z0-9]{1,8}\z/', $extension) ? '.'.$extension : '');
+                $actor = $request->user();
+                if ($actor instanceof Admin) {
+                    abort_unless($reports->chatFiles($actor, $message->chatRoom), 403);
+                } else {
+                    Gate::authorize('view', $message->chatRoom);
+                }
 
-                return $disk->download($message->file_path, $name, [...$headers, 'Content-Type' => 'application/octet-stream']);
+                return $this->download($message->file_path, $message->original_filename, 'lampiran-chat-'.$id, $headers);
+            case 'report_evidence':
+                $report = Report::query()->findOrFail($id);
+                abort_unless($reports->evidence($request->user(), $report), 403);
+
+                return $this->download($report->file_path, $report->original_filename, 'bukti-laporan-'.$id, $headers);
+            case 'clarification_evidence':
+                $response = ReportClarificationResponse::query()->with('clarification.report')->findOrFail($id);
+                abort_unless($reports->clarification($request->user(), $response->clarification), 403);
+
+                return $this->download($response->file_path, $response->original_filename, 'bukti-klarifikasi-'.$id, $headers);
             default:
                 abort(404);
         }
@@ -78,5 +94,15 @@ class PrivateFileController extends Controller
 
         return $disk->response($path, $name, [...$headers, 'Content-Type' => $mime],
             $request->boolean('unduh') ? 'attachment' : 'inline');
+    }
+
+    private function download(?string $path, ?string $original, string $label, array $headers): StreamedResponse
+    {
+        $disk = Storage::disk('private');
+        abort_unless($path && $disk->exists($path), 404);
+        $extension = strtolower(pathinfo($original ?? '', PATHINFO_EXTENSION));
+        $name = $label.(preg_match('/\A[a-z0-9]{1,8}\z/', $extension) ? '.'.$extension : '');
+
+        return $disk->download($path, $name, [...$headers, 'Content-Type' => 'application/octet-stream']);
     }
 }

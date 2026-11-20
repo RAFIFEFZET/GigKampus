@@ -3,11 +3,14 @@
 namespace App\Services;
 
 use App\Enums\PriceOfferStatus;
+use App\Models\Admin;
 use App\Models\Category;
+use App\Models\Report;
 use App\Models\ServiceRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 final class RequestBoard
@@ -50,17 +53,22 @@ final class RequestBoard
             $request->save();
             Audit::record($buyer, 'request.closed', $request, $before, $request->only(['status']));
 
-            $pendingOffers = $request->priceOffers()->where('status', PriceOfferStatus::Pending)
-                ->orderBy('id')->lockForUpdate()->get();
-            $reason = 'Pemilik menutup permintaan.';
-
-            foreach ($pendingOffers as $offer) {
-                $before = $offer->only(['status', 'version']);
-                $offer->reject($reason);
-                $offer->save();
-                Audit::record($buyer, 'offer.rejected', $offer, $before, $offer->only(['status', 'version']), $reason);
-                Inbox::offer($offer->seller_id, 'offer.rejected', 'Penawaran ditolak', $reason, $offer);
-            }
+            $this->rejectPendingOffers($request, $buyer, 'Pemilik menutup permintaan.');
         });
+    }
+
+    /** Reject outstanding offers after the caller locks and closes the request in the same transaction. */
+    public function rejectPendingOffers(ServiceRequest $request, User|Admin $actor, string $reason, ?Report $report = null): void
+    {
+        $pendingOffers = $request->priceOffers()->where('status', PriceOfferStatus::Pending)
+            ->orderBy('id')->lockForUpdate()->get();
+
+        foreach ($pendingOffers as $offer) {
+            $before = $offer->only(['status', 'version']);
+            $offer->reject(Str::limit($reason, 255, ''));
+            $offer->save();
+            Audit::record($actor, 'offer.rejected', $offer, $before, $offer->only(['status', 'version']), $reason, $report);
+            Inbox::offer($offer->seller_id, 'offer.rejected', 'Penawaran ditolak', $reason, $offer);
+        }
     }
 }

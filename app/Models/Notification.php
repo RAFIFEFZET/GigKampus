@@ -76,6 +76,9 @@ class Notification extends Model
         $verificationId = self::navigationId($this->data->verification_id ?? null);
 
         return match (true) {
+            $this->admin_id !== null && $this->report_id !== null => route('admin.reports.show', $this->report_id, false),
+            $this->user_id !== null && $this->report_id !== null && str_starts_with($this->type, 'clarification.') => route('reports.index', $this->order_id === null ? [] : ['order' => $this->order_id], false),
+            $this->user_id !== null && $this->report_id !== null && str_starts_with($this->type, 'report.') => route('reports.show', $this->report_id, false),
             $this->order_id !== null => route('orders.show', $this->order_id, false),
             $this->user_id !== null && $requestId !== false => route('requests.show', $requestId, false),
             $this->user_id !== null && str_starts_with($this->type, 'ktm.') => route('ktm.index', absolute: false),

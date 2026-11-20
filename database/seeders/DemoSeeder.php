@@ -61,6 +61,7 @@ class DemoSeeder extends Seeder
                 'entity_id' => $admin,
             ])->exists()) {
                 $this->installFiles();
+                $this->seedActiveDisputeChat();
 
                 return;
             }
@@ -70,6 +71,7 @@ class DemoSeeder extends Seeder
             $this->seedOrders($posterGig, $revisionGig, $customOffer);
             $this->seedPreOrderChats($posterGig, $pendingOffer);
             $this->installFiles();
+            $this->seedActiveDisputeChat();
             $this->audit(self::SEED_COMPLETED, 'admins', $this->admin, 0, ['status' => 'ready']);
         });
     }
@@ -647,6 +649,34 @@ class DemoSeeder extends Seeder
         $this->report(ReportType::ChatReport, 'chat_room_id', $gigRoom, $seller, ReportCategory::MisleadingSpam, 'Pesan berulang di ruang pra-pesan ini dilaporkan untuk uji antrean moderasi.', -17);
     }
 
+    private function seedActiveDisputeChat(): void
+    {
+        $dispute = DB::table('orders')
+            ->join('chat_rooms', 'chat_rooms.order_id', '=', 'orders.id')
+            ->join('reports', 'reports.order_id', '=', 'orders.id')
+            ->where('orders.creation_key', $this->key(10))
+            ->where('orders.status', OrderStatus::Disputed)
+            ->where('chat_rooms.status', ChatRoomStatus::Active)
+            ->where('reports.status', ReportStatus::Pending)
+            ->where('reports.order_status_before_dispute', OrderStatus::AwaitingPayment)
+            ->where('reports.order_stage_version', 3)
+            ->first(['orders.seller_id', 'chat_rooms.id as room_id', 'reports.created_at']);
+
+        if ($dispute === null || DB::table('chat_messages')->where('chat_room_id', $dispute->room_id)->exists()) {
+            return;
+        }
+
+        $this->insert('chat_messages', [
+            'chat_room_id' => $dispute->room_id,
+            'sender_id' => $dispute->seller_id,
+            'client_message_key' => $this->key(1),
+            'message_type' => ChatMessageType::Regular,
+            'message_body' => 'Saya lampirkan mutasi simulasi untuk membantu pemeriksaan Admin.',
+            ...$this->attachment('proof-statement.png'),
+            'sent_at' => CarbonImmutable::parse($dispute->created_at)->addHour()->format('Y-m-d H:i:s.uP'),
+        ]);
+    }
+
     private function room(int $buyer, int $seller, int $created, ?int $gig = null, ?int $offer = null, ?int $order = null, ?int $archive = null): int
     {
         return $this->insert('chat_rooms', [
@@ -725,18 +755,29 @@ class DemoSeeder extends Seeder
         if ($handled) {
             $this->audit('report.claimed', 'reports', $report, $created + 1, ['handled_by_admin_id' => $this->admin], admin: $this->admin, order: $order, report: $report);
         }
+        $parties = [$reporter];
         if ($order !== null) {
+            $current = DB::table('orders')->find($order);
+            $parties = [$current->buyer_id, $current->seller_id];
             $stage = $details['order_stage_version'];
             $this->audit('order.disputed', 'orders', $order, $created, ['status' => OrderStatus::Disputed, 'stage_version' => $stage], user: $reporter, order: $order, report: $report, before: ['status' => $details['order_status_before_dispute'], 'stage_version' => $stage]);
             if ($decided !== null) {
-                $current = DB::table('orders')->find($order);
                 $this->audit('order.dispute_closed', 'orders', $order, $decided, ['status' => $current->status, 'stage_version' => $current->stage_version], admin: $this->admin, order: $order, report: $report, before: ['status' => OrderStatus::Disputed], reason: $note);
+            } else {
+                $opponent = $current->buyer_id === $reporter ? $current->seller_id : $current->buyer_id;
+                $this->notify('order.disputed', 'Pesanan dalam sengketa', 'Tindakan transaksi dijeda selama komplain diperiksa.',
+                    $created, user: $opponent, order: $order, report: $report, url: route('orders.show', $order, false));
             }
         }
         if ($decided !== null) {
             $this->audit('report.'.$status->value, 'reports', $report, $decided, ['status' => $status, 'decision_code' => $decision], admin: $this->admin, order: $order, report: $report, reason: $note);
+            foreach ($parties as $party) {
+                $this->notify('report.decided', 'Putusan laporan tersedia', 'Admin telah menetapkan putusan akhir.',
+                    $decided, user: $party, order: $order, report: $report, url: route('reports.show', $report, false));
+            }
         } else {
-            $this->notify('report.opened', 'Laporan demo baru', $description, $created, admin: $this->admin, order: $order, report: $report);
+            $this->notify('report.opened', 'Laporan demo baru', $description, $created, admin: $this->admin,
+                order: $order, report: $report, url: route('admin.reports.show', $report, false));
         }
 
         return $report;
@@ -754,7 +795,8 @@ class DemoSeeder extends Seeder
             'due_at' => $this->at($requested + 24),
         ]);
         $this->audit('clarification.requested', 'report_clarifications', $id, $requested, ['recipient_user_id' => $user], admin: $this->admin, report: $report);
-        $this->notify('clarification.requested', 'Permintaan klarifikasi', $question, $requested, user: $user, report: $report);
+        $this->notify('clarification.requested', 'Permintaan klarifikasi', 'Admin meminta klarifikasi dalam 24 jam.',
+            $requested, user: $user, report: $report, url: route('reports.clarifications.show', $id, false));
 
         return $id;
     }
@@ -771,9 +813,11 @@ class DemoSeeder extends Seeder
             'submitted_at' => $this->at($submitted),
         ]);
         $this->audit('clarification.responded', 'report_clarification_responses', $id, $submitted, ['clarification_id' => $clarification], user: $user, report: $question->report_id);
+        $this->notify('clarification.responded', 'Jawaban klarifikasi diterima', 'Penerima telah mengirim jawaban atau bukti susulan.',
+            $submitted, admin: $question->requested_by_admin_id, report: $question->report_id, url: route('admin.reports.show', $question->report_id, false));
     }
 
-    private function notify(string $type, string $title, string $body, int $created, ?int $user = null, ?int $admin = null, ?int $order = null, ?int $report = null, ?int $read = null): void
+    private function notify(string $type, string $title, string $body, int $created, ?int $user = null, ?int $admin = null, ?int $order = null, ?int $report = null, ?int $read = null, ?string $url = null): void
     {
         $this->insert('notifications', [
             'user_id' => $user,
@@ -783,6 +827,7 @@ class DemoSeeder extends Seeder
             'body' => $body,
             'order_id' => $order,
             'report_id' => $report,
+            ...($url === null ? [] : ['data' => json_encode(['relative_url' => $url], JSON_THROW_ON_ERROR)]),
             'created_at' => $this->at($created),
             'read_at' => $read === null ? null : $this->at($read),
         ]);

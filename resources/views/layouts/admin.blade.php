@@ -13,6 +13,8 @@
                     'Ringkasan' => ['admin.index', 'admin.index'],
                     'Review KTM' => ['admin.ktm.index', 'admin.ktm.*'],
                     'Kategori' => ['admin.categories.index', 'admin.categories.*'],
+                    'Antrean Laporan' => ['admin.reports.index', 'admin.reports.*'],
+                    'Moderasi' => ['admin.moderation.index', 'admin.moderation.*'],
                 ] as $label => [$route, $pattern])
                     <a href="{{ route($route) }}" @if (request()->routeIs($pattern)) aria-current="page" @endif>{{ $label }}</a>
                 @endforeach
