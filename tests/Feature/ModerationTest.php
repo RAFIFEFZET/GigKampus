@@ -222,7 +222,9 @@ class ModerationTest extends PostgresTestCase
         $this->get(route('admin.moderation.index'))->assertOk()->assertSee('Moderasi');
         Livewire::test(Index::class)
             ->set('search', (string) $gig->id)
-            ->call('openAction', $gig->id)
+            ->call('openAction', $gig->id, 'suspend_user')
+            ->assertHasErrors('action')
+            ->call('openAction', $gig->id, 'suspend_gig')
             ->set('action', 'suspend_user')
             ->set('reason', self::REASON)
             ->call('apply')
@@ -231,5 +233,47 @@ class ModerationTest extends PostgresTestCase
             ->call('apply')
             ->assertHasNoErrors()
             ->assertSee('Tindakan moderasi tersimpan.');
+    }
+
+    public function test_console_has_tab_totals_and_resets_its_status_filter_when_changing_section(): void
+    {
+        $this->withoutVite();
+        $this->actingAs(Admin::query()->firstOrFail(), 'admin');
+        $gig = Gig::query()->where('status', GigStatus::Suspended)->firstOrFail();
+        $hiddenRequest = ServiceRequest::query()->where('is_hidden', true)->firstOrFail();
+        $hiddenReview = Review::query()->where('is_hidden', true)->firstOrFail();
+        $suspendedStudent = User::query()->where('is_suspended', true)->firstOrFail();
+        $counts = [
+            'gig' => Gig::query()->count(),
+            'request' => ServiceRequest::query()->count(),
+            'review' => Review::query()->count(),
+            'account' => User::query()->count(),
+        ];
+
+        Livewire::withQueryParams(['status' => 'suspended'])->test(Index::class)
+            ->assertViewHas('counts', $counts)
+            ->assertViewHas('items', fn ($items) => $items->getCollection()->every(fn (Gig $item) => $item->status === GigStatus::Suspended))
+            ->assertSee($gig->seller->name)
+            ->assertSee($gig->category->name)
+            ->assertSee('Laporan terkait')
+            ->assertSee('Cabut Suspend Gig')
+            ->set('section', 'request')
+            ->assertSet('status', 'all')
+            ->set('status', 'hidden')
+            ->assertViewHas('items', fn ($items) => $items->getCollection()->every(fn (ServiceRequest $item) => $item->is_hidden))
+            ->assertSee($hiddenRequest->title)
+            ->set('section', 'review')
+            ->assertSet('status', 'all')
+            ->set('status', 'hidden')
+            ->assertViewHas('items', fn ($items) => $items->getCollection()->every(fn (Review $item) => $item->is_hidden))
+            ->assertSee('Ulasan pesanan #'.$hiddenReview->order_id)
+            ->assertSee('Alasan tindakan terakhir')
+            ->assertDontSee('Tinjau Kasus')
+            ->set('section', 'account')
+            ->assertSet('status', 'all')
+            ->set('status', 'suspended')
+            ->assertViewHas('items', fn ($items) => $items->getCollection()->every(fn (User $item) => $item->is_suspended && $item->reports_count !== null))
+            ->assertSee($suspendedStudent->name)
+            ->assertSee('Cabut Suspend Akun');
     }
 }

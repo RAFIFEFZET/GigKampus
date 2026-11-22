@@ -1,5 +1,8 @@
 import Echo from 'laravel-echo';
 import Pusher from 'pusher-js';
+import currencyInput from './currency-input';
+
+window.gigkampusCurrency = currencyInput;
 
 const key = document.querySelector('meta[name="reverb-key"]')?.content;
 const audience = document.querySelector('meta[name="realtime-audience"]')?.content;

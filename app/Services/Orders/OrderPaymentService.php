@@ -62,7 +62,7 @@ final class OrderPaymentService
                 $payment->saveOrFail();
                 $order->saveOrFail();
                 OrderActivity::record($order, $buyer, 'payment.proof_submitted', 'Bukti pembayaran baru',
-                    'Periksa bukti pembayaran simulasi untuk pesanan ini.', $before, $this->state($order, $payment, $proof));
+                    'Periksa bukti pembayaran untuk pesanan ini.', $before, $this->state($order, $payment, $proof));
             });
         } catch (Throwable $exception) {
             if (is_string($path)) {
@@ -90,7 +90,7 @@ final class OrderPaymentService
             $payment->saveOrFail();
             $order->saveOrFail();
             OrderActivity::record($order, $seller, 'payment.verified', 'Pembayaran divalidasi',
-                'Pembayaran simulasi telah diperiksa. Pesanan mulai dikerjakan.', $before, $this->state($order, $payment, $proof));
+                'Pembayaran telah diperiksa. Pesanan mulai dikerjakan.', $before, $this->state($order, $payment, $proof));
         });
     }
 

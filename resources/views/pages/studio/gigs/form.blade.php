@@ -18,7 +18,7 @@
                 <x-ui.select name="category_id" label="Kategori" :value="$gig?->category_id" :options="['' => 'Pilih kategori aktif'] + $categories->pluck('name', 'id')->all()" required/>
                 <x-ui.textarea name="description" label="Deskripsi Jasa" :value="$gig?->description" minlength="20" maxlength="5000" required/>
                 <div class="grid gap-4 sm:grid-cols-3">
-                    <x-ui.input name="base_price" label="Harga Tetap (Rp)" type="number" :value="$gig?->base_price" min="1" max="100000000" required/>
+                    <x-ui.currency-input name="base_price" label="Harga Tetap (Rp)" :value="$gig?->base_price" min="1" max="100000000" required/>
                     <x-ui.input name="delivery_days" label="Pengerjaan (hari)" type="number" :value="$gig?->delivery_days" min="1" max="365" required/>
                     <x-ui.input name="max_revisions" label="Kuota Revisi" type="number" :value="$gig?->max_revisions ?? 0" min="0" max="20" required/>
                 </div>

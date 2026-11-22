@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\OrderStatus;
 use App\Models\Admin;
+use App\Models\Gig;
 use App\Models\Order;
 use App\Models\OrderDelivery;
 use App\Models\PaymentProof;
@@ -46,8 +47,8 @@ class OrderPagesTest extends PostgresTestCase
 
         $this->get($url)->assertRedirect('/login');
         $this->actingAs($outsider)->get($url)->assertForbidden();
-        $this->actingAs($order->buyer)->get($url)->assertOk()->assertSeeText('Simulasi demo');
-        $this->actingAs($order->seller)->get($url.'/pembayaran')->assertOk()->assertSeeText('Simulasi demo');
+        $this->actingAs($order->buyer)->get($url)->assertOk()->assertDontSeeText('Simulasi demo');
+        $this->actingAs($order->seller)->get($url.'/pembayaran')->assertOk()->assertDontSeeText('Simulasi demo');
 
         auth('web')->logout();
         $this->actingAs($case->handledByAdmin, 'admin')->get($url)->assertOk();
@@ -57,6 +58,41 @@ class OrderPagesTest extends PostgresTestCase
             'password_hash' => 'bukan-sandi-produksi',
         ]);
         $this->actingAs($unrelated, 'admin')->get($url)->assertForbidden();
+    }
+
+    public function test_checkout_explains_brief_and_asset_delivery_and_payment_pages_hide_demo_banners(): void
+    {
+        $buyer = $this->student('buyer');
+        $gig = Gig::publiclyVisible()->where('seller_id', '!=', $buyer->id)->firstOrFail();
+        $this->actingAs($buyer)->get(route('checkout.gig', $gig))->assertOk()
+            ->assertSeeText('tema, ukuran, teks wajib, dan gaya warna')
+            ->assertSeeText('Chat Pesanan setelah checkout')
+            ->assertDontSeeText('Simulasi demo');
+
+        $qris = $buyer->buyerOrders()->whereNotNull('qris_image_path_snapshot')->firstOrFail();
+        $this->get(route('orders.payment.qris', $qris))->assertOk()->assertDontSeeText('Simulasi demo');
+        $refund = $buyer->buyerOrders()->whereHas('payment', fn ($query) => $query->where('refund_status', 'pending'))->firstOrFail();
+        $this->get(route('orders.payment.show', $refund))->assertOk()
+            ->assertSeeText('Refund Penuh')->assertDontSeeText('Simulasi demo');
+    }
+
+    public function test_seller_payment_actions_use_separate_dialogs_and_amounts_still_require_an_integer(): void
+    {
+        $seller = $this->student('seller');
+        $order = $seller->sellerOrders()->where('status', OrderStatus::AwaitingValidation)->firstOrFail();
+        $proof = $order->payment->proofs()->where('seller_review_status', 'pending')->sole();
+
+        $this->actingAs($seller)->get(route('orders.payment.show', $order))->assertOk()
+            ->assertSee('data-currency-display', false)
+            ->assertSee('aria-label="Konfirmasi Validasi Pembayaran"', false)
+            ->assertSee('aria-label="Tolak Bukti Pembayaran"', false)
+            ->assertSeeText($proof->original_filename)
+            ->assertSeeText('Ya, Tolak Bukti');
+
+        $this->postJson(route('orders.payment.proofs.verify', [$order, $proof]), [
+            'amount' => $order->payment->amount.'.5', 'confirmed_recipient' => true,
+        ])->assertUnprocessable()->assertJsonValidationErrors('amount');
+        self::assertSame(OrderStatus::AwaitingValidation, $order->refresh()->status);
     }
 
     public function test_private_proof_delivery_and_qris_snapshot_resolve_through_the_order_policy(): void

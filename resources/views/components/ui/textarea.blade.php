@@ -7,6 +7,7 @@
         id="{{ $id ?? $name }}"
         name="{{ $name }}"
         rows="{{ $rows }}"
+        @if ($help || $errors->has($name)) aria-describedby="{{ trim(($help ? ($id ?? $name).'-help ' : '').($errors->has($name) ? ($id ?? $name).'-error' : '')) }}" @endif
         @if ($errors->has($name)) aria-invalid="true" @endif
         {{ $attributes->class('field-control') }}
     >{{ is_scalar($oldValue) ? $oldValue : '' }}</textarea>

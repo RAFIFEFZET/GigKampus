@@ -1,6 +1,6 @@
-@props(['title'])
+@props(['title', 'open' => false])
 
-<div x-data>
+<div x-data @if ($open) x-init="$nextTick(() => $refs.dialog.showModal())" @endif>
     <span x-on:click="$refs.dialog.showModal()">{{ $trigger }}</span>
     <dialog x-ref="dialog" aria-label="{{ $title }}" {{ $attributes->class('dialog') }}>
         <div class="stack">

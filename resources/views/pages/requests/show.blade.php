@@ -84,7 +84,7 @@
             @elseif ($conflict && $retained)
                 <x-ui.card class="stack">
                     <x-ui.section-header level="2" title="Draf Penawaran"/>
-                    <x-ui.input name="retained_price" label="Nominal Harga Tawar (Rp)" :value="$retained['offered_price'] ?? null" readonly/>
+                    <x-ui.currency-input name="retained_price" label="Nominal Harga Tawar (Rp)" :value="$retained['offered_price'] ?? null" readonly/>
                     <x-ui.input name="retained_revisions" label="Kuota Revisi" :value="$retained['max_revisions'] ?? null" readonly/>
                     <x-ui.textarea name="retained_note" label="Catatan Penawaran" :value="$retained['proposal_note'] ?? null" readonly/>
                 </x-ui.card>

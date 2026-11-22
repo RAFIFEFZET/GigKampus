@@ -27,7 +27,7 @@ final class OrderPaymentController
         $data = $request->validate([
             'proof' => ['bail', 'required', 'file', 'image', 'mimes:jpg,jpeg,png', 'extensions:jpg,jpeg,png', 'max:5120'],
         ], [
-            'proof.required' => 'Unggah bukti pembayaran simulasi.',
+            'proof.required' => 'Unggah bukti pembayaran.',
             'proof.image' => 'Bukti pembayaran harus berformat JPG, JPEG, atau PNG.',
             'proof.mimes' => 'Bukti pembayaran harus berformat JPG, JPEG, atau PNG.',
             'proof.extensions' => 'Bukti pembayaran harus berformat JPG, JPEG, atau PNG.',

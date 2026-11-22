@@ -40,13 +40,13 @@ RUN npm run build
 
 FROM tooling AS app
 RUN apt-get update \
-    && apt-get install -y --no-install-recommends libleptonica6 \
+    && apt-get install -y --no-install-recommends imagemagick libleptonica6 \
         tesseract-ocr-eng tesseract-ocr-ind tesseract-ocr-osd \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=ocr-build /opt/tesseract/bin/tesseract /usr/local/bin/tesseract
 COPY --from=ocr-build /opt/tesseract/share/tessdata/ /usr/share/tesseract-ocr/5/tessdata/
 ENV TESSDATA_PREFIX=/usr/share/tesseract-ocr/5/tessdata
-RUN tesseract --version && tesseract --list-langs
+RUN tesseract --version && tesseract --list-langs && magick -version
 
 COPY composer.json composer.lock ./
 RUN --mount=type=cache,target=/tmp/composer-cache \

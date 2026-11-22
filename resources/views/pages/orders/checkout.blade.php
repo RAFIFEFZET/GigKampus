@@ -13,7 +13,6 @@
     <section class="orders-shell stack">
         <x-domain.checkout-steps :step="1" :$back :back-label="$gig ? 'Kembali ke Detail Jasa' : 'Kembali ke Permintaan'"/>
         <x-ui.section-header title="Pemesanan & Pembayaran" :subtitle="$gig ? 'Lengkapi brief, lalu pilih metode bayar yang tersedia.' : 'Tinjau penawaran Seller dan pilih metode bayar yang tersedia.'"/>
-        <x-domain.simulation-banner/>
         @if ($conflict)
             <x-ui.alert tone="warning" title="Tinjau kembali pesanan">{{ $conflict }}</x-ui.alert>
         @endif
@@ -35,7 +34,9 @@
                     @if ($gig)
                         <x-ui.section-header level="2" title="Catatan Pengerjaan untuk Seller"/>
                         <x-ui.textarea name="buyer_brief" label="Brief Pengerjaan" :value="$brief" rows="6" minlength="20"
-                            maxlength="5000" placeholder="Jelaskan kebutuhan, bahan, dan hasil yang diharapkan." :readonly="! $canSubmit" required/>
+                            maxlength="5000" placeholder="Jelaskan kebutuhan dan hasil yang diharapkan."
+                            help="Cukup tulis tema, ukuran, teks wajib, dan gaya warna. Kirim foto, logo, atau referensi melalui Chat Pesanan setelah checkout."
+                            :readonly="! $canSubmit" required/>
                     @else
                         <x-ui.section-header level="2" title="Ringkasan Penawaran"/>
                         <div><h3>Brief Permintaan</h3><p class="mt-1 whitespace-pre-wrap">{{ $serviceRequest->description }}</p></div>

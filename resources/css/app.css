@@ -6,6 +6,7 @@
 @import './orders.css';
 @import './chat.css';
 @import './moderation.css';
+@import './admin-categories.css';
 
 @source '../views';
 @source '../../app/Livewire';

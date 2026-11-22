@@ -5,6 +5,7 @@ vendor
 public/build
 public/hot
 public/storage
+resources/ktm
 bootstrap/cache/*.php
 storage/**/*.log
 storage/app/private/*

@@ -16,6 +16,7 @@
     .btn-outline { @apply border border-campus-border bg-white text-campus-ink hover:bg-campus-background; }
     .btn-ghost { @apply text-campus-link hover:bg-campus-sky; }
     .btn-danger { @apply bg-red-50 text-red-800 hover:bg-red-100; }
+    .btn-danger-outline { @apply border border-red-300 bg-white text-red-800 hover:bg-red-50; }
     .btn-yellow { @apply bg-campus-yellow text-campus-ink hover:bg-yellow-400; }
     .badge { @apply inline-flex max-w-full items-center gap-1 rounded-full px-3 py-1 text-xs font-semibold; }
     .badge-neutral, .alert-neutral { @apply bg-campus-background text-campus-ink; }
@@ -33,6 +34,11 @@
     textarea.field-control { @apply min-h-24 resize-y; }
     .field-error { @apply text-sm text-red-800; }
     .field-help { @apply text-sm text-campus-muted; }
+    .currency-field { @apply relative min-w-0; }
+    .currency-field .field-control { @apply pl-12 tabular-nums; }
+    .currency-prefix {
+        @apply pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-sm font-semibold text-campus-muted;
+    }
     .file-control { @apply bg-campus-background file:mr-2 file:px-2 file:font-medium file:text-campus-link; }
     .avatar { @apply inline-grid size-8 shrink-0 place-items-center overflow-hidden rounded-full bg-campus-sky text-xs font-bold text-campus-blue; }
     .avatar img { @apply size-full object-cover; }
@@ -91,4 +97,11 @@
     .admin-sidebar a { @apply rounded-campus-field px-3 py-2 text-sm hover:bg-campus-sky; }
     .admin-sidebar a[aria-current='page'] { @apply bg-campus-sky font-semibold text-campus-link; }
     .admin-main { @apply p-5 sm:p-10; }
+
+    button, .btn, .badge, .currency-prefix, .admin-sidebar, .counter,
+    .site-header :is(a, button, summary), .mobile-nav a,
+    .tabs, .tab, [role='tab'], .order-tabs, .order-filters, .order-stage, .checkout-steps, .auth-tabs,
+    .page-title :is(h1, h2, h3), .dialog h2 {
+        @apply select-none caret-transparent;
+    }
 }
